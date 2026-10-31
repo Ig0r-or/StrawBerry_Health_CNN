@@ -185,7 +185,6 @@ erDiagram
 ## 🔗 Repositório e gestão
 
 - **Repositório Git (todos os membros):** [github.com/Ig0r-or/StrawBerry_Health_CNN](https://github.com/Ig0r-or/StrawBerry_Health_CNN)
-- **Quadro de tarefas (Trello):** [BerryHealth AI](https://trello.com/invite/b/6ae647df6481146c4c8bc97c/ATTIe38c22327f91942a503bb69bc0c5758aC7A4BF99/berryhealth-ai)
 
 ---
 
