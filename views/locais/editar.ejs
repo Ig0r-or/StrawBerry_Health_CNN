@@ -1,0 +1,78 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-content" style="max-width: 680px;">
+  <%- include('../partials/flash') %>
+
+  <div style="margin-bottom: 20px;">
+    <a href="/locais" style="font-size: 14px; font-weight: 600;">← Voltar para Locais de Plantio</a>
+  </div>
+
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div>
+        <h1 style="font-size: 22px; margin: 0 0 4px; color: var(--ink);">Editar Local de Plantio</h1>
+        <p style="color: var(--mut); margin: 0; font-size: 14px;">Atualize as informações do talhão "<%= local.nome %>".</p>
+      </div>
+      <form action="/locais/<%= local.id %>/excluir" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este local de plantio?');">
+        <button type="submit" class="btn btn-sm btn-danger">Excluir Talhão</button>
+      </form>
+    </div>
+
+    <form action="/locais/<%= local.id %>/editar" method="POST">
+      <div class="form-group">
+        <label for="nome" class="form-label">Nome do Talhão / Local *</label>
+        <input type="text" id="nome" name="nome" class="form-control" value="<%= local.nome %>" required autofocus>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cultivar" class="form-label">Cultivar / Variedade</label>
+          <input type="text" id="cultivar" name="cultivar" class="form-control" value="<%= local.cultivar || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="area_hectares" class="form-label">Área Estimada (hectares)</label>
+          <input type="number" step="0.01" id="area_hectares" name="area_hectares" class="form-control" value="<%= local.area_hectares || '' %>">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cep" class="form-label">CEP</label>
+          <input type="text" id="cep" name="cep" class="form-control" value="<%= local.cep || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="cidade" class="form-label">Cidade *</label>
+          <input type="text" id="cidade" name="cidade" class="form-control" value="<%= local.cidade %>" required>
+        </div>
+        <div class="form-group">
+          <label for="estado" class="form-label">Estado *</label>
+          <input type="text" id="estado" name="estado" class="form-control" value="<%= local.estado %>" maxlength="2" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="latitude" class="form-label">Latitude</label>
+          <input type="number" step="any" id="latitude" name="latitude" class="form-control" value="<%= local.latitude || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="longitude" class="form-label">Longitude</label>
+          <input type="number" step="any" id="longitude" name="longitude" class="form-control" value="<%= local.longitude || '' %>">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="observacoes" class="form-label">Observações sobre o cultivo</label>
+        <textarea id="observacoes" name="observacoes" rows="3" class="form-control"><%= local.observacoes || '' %></textarea>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button type="submit" class="btn" style="flex: 1;">Salvar Alterações</button>
+        <a href="/locais" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

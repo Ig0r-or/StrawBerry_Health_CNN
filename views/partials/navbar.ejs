@@ -1,0 +1,58 @@
+<header>
+  <div class="nav-container">
+    <a href="<%= usuario ? '/dashboard' : '/login' %>" class="brand">
+      <span>🍓</span>
+      <span>BerryHealth AI</span>
+    </a>
+
+    <% if (usuario) { %>
+      <ul class="nav-links">
+        <li>
+          <a href="/dashboard" class="<%= currentPath === '/dashboard' || currentPath === '/' ? 'active' : '' %>">
+            📊 Visão Geral
+          </a>
+        </li>
+        <li>
+          <a href="/locais" class="<%= currentPath.startsWith('/locais') ? 'active' : '' %>">
+            🌱 Locais de Plantio
+          </a>
+        </li>
+        <li>
+          <a href="/diagnostico" class="<%= currentPath === '/diagnostico' ? 'active' : '' %>">
+            📷 Diagnóstico por Foto
+          </a>
+        </li>
+      </ul>
+
+      <div class="user-area">
+        <button class="user-pill" type="button">
+          <div class="avatar-circle">
+            <%= usuario.nome.substring(0, 2).toUpperCase() %>
+          </div>
+          <span><%= usuario.nome.split(' ')[0] %></span>
+          <span class="badge-tag <%= usuario.perfil === 'admin' ? 'badge-admin' : 'badge-produtor' %>">
+            <%= usuario.perfil === 'admin' ? 'Admin' : 'Produtor' %>
+          </span>
+        </button>
+        <div class="user-dropdown">
+          <ul>
+            <li><a href="/perfil">👤 Meu Perfil</a></li>
+            <li><a href="/locais">🌱 Meus Locais / Talhões</a></li>
+            <li><a href="/diagnostico">📷 Novo Diagnóstico</a></li>
+            <li class="sep"></li>
+            <li><a href="/logout" style="color: #c62828;">↩ Sair do Sistema</a></li>
+          </ul>
+        </div>
+      </div>
+    <% } else { %>
+      <ul class="nav-links">
+        <li>
+          <a href="/login" class="<%= currentPath === '/login' ? 'active' : '' %>">Entrar</a>
+        </li>
+        <li>
+          <a href="/cadastro" class="btn btn-sm">Criar Conta</a>
+        </li>
+      </ul>
+    <% } %>
+  </div>
+</header>

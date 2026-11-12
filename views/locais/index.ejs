@@ -1,0 +1,122 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-content">
+  <%- include('../partials/flash') %>
+
+  <div class="actions-bar">
+    <div>
+      <h1 style="font-size: 26px; margin: 0 0 4px; color: var(--ink);">Meus Locais de Plantio</h1>
+      <p style="margin: 0; color: var(--mut); font-size: 14px;">
+        Cadastre e monitore os talhões, estufas e propriedades onde o morango é cultivado.
+      </p>
+    </div>
+    <div>
+      <a href="/locais/novo" class="btn">+ Novo Local de Plantio</a>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 24px; padding: 18px 24px;">
+    <form action="/locais" method="GET" class="search-form" style="max-width: 100%;">
+      <input type="text" name="q" class="form-control" placeholder="Buscar por nome do talhão, cidade ou cultivar..." value="<%= busca %>">
+      <button type="submit" class="btn btn-secondary">🔍 Buscar</button>
+      <% if (busca) { %>
+        <a href="/locais" class="btn btn-secondary">Limpar</a>
+      <% } %>
+    </form>
+  </div>
+
+  <% if (locais && locais.length > 0) { %>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nome / Talhão</th>
+              <th>Cultivar</th>
+              <th>Área (ha)</th>
+              <th>Localização</th>
+              <% if (isAdmin) { %>
+                <th>Proprietário</th>
+              <% } %>
+              <th>Cadastrado em</th>
+              <th style="text-align: right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% locais.forEach(local => { %>
+              <tr>
+                <td>
+                  <b><%= local.nome %></b>
+                  <% if (local.observacoes) { %>
+                    <br><small style="color: var(--mut);"><%= local.observacoes.substring(0, 45) %><%= local.observacoes.length > 45 ? '...' : '' %></small>
+                  <% } %>
+                </td>
+                <td><span class="tip-badge"><%= local.cultivar || 'San Andreas' %></span></td>
+                <td><%= local.area_hectares ? local.area_hectares + ' ha' : '0.50 ha' %></td>
+                <td>
+                  <%= local.cidade %> - <%= local.estado %>
+                  <% if (local.cep) { %>
+                    <br><small style="color: var(--mut);">CEP: <%= local.cep %></small>
+                  <% } %>
+                </td>
+                <% if (isAdmin) { %>
+                  <td><%= local.usuario ? local.usuario.nome : 'N/A' %></td>
+                <% } %>
+                <td>
+                  <%= new Date(local.criado_em).toLocaleDateString('pt-BR') %>
+                </td>
+                <td style="text-align: right; white-space: nowrap;">
+                  <a href="/locais/<%= local.id %>/editar" class="btn btn-sm btn-secondary" title="Editar">
+                    ✏️ Editar
+                  </a>
+                  <form action="/locais/<%= local.id %>/excluir" method="POST" style="display: inline-block; margin-left: 6px;" onsubmit="return confirm('Tem certeza que deseja excluir o local <%= local.nome %>? Esta ação não pode ser desfeita.');">
+                    <button type="submit" class="btn btn-sm btn-danger" title="Excluir">
+                      🗑️ Excluir
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Paginação -->
+    <% if (totalPaginas > 1) { %>
+      <div class="pagination">
+        <% if (paginaAtual > 1) { %>
+          <a href="/locais?pagina=<%= paginaAtual - 1 %>&q=<%= encodeURIComponent(busca) %>">« Anterior</a>
+        <% } %>
+
+        <% for (let i = 1; i <= totalPaginas; i++) { %>
+          <% if (i === paginaAtual) { %>
+            <span class="active"><%= i %></span>
+          <% } else { %>
+            <a href="/locais?pagina=<%= i %>&q=<%= encodeURIComponent(busca) %>"><%= i %></a>
+          <% } %>
+        <% } %>
+
+        <% if (paginaAtual < totalPaginas) { %>
+          <a href="/locais?pagina=<%= paginaAtual + 1 %>&q=<%= encodeURIComponent(busca) %>">Próxima »</a>
+        <% } %>
+      </div>
+    <% } %>
+
+  <% } else { %>
+    <div class="card" style="text-align: center; padding: 48px 20px;">
+      <span style="font-size: 48px;">🌱</span>
+      <h2 style="font-size: 20px; margin: 12px 0 6px;">Nenhum local de plantio encontrado</h2>
+      <% if (busca) { %>
+        <p style="color: var(--mut); margin: 0 0 16px;">Nenhum talhão corresponde ao filtro "<%= busca %>".</p>
+        <a href="/locais" class="btn btn-secondary">Limpar Busca</a>
+      <% } else { %>
+        <p style="color: var(--mut); margin: 0 0 16px;">Comece cadastrando suas estufas ou áreas de cultivo.</p>
+        <a href="/locais/novo" class="btn">+ Cadastrar Local de Plantio</a>
+      <% } %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('../partials/footer') %>

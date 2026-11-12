@@ -1,0 +1,17 @@
+<% if (typeof sucesso !== 'undefined' && sucesso && sucesso.length > 0) { %>
+  <div class="flash-msg flash-sucesso">
+    <span>✅ <%= sucesso %></span>
+  </div>
+<% } %>
+
+<% if (typeof erro !== 'undefined' && erro && erro.length > 0) { %>
+  <div class="flash-msg flash-erro">
+    <span>⚠️ <%= erro %></span>
+  </div>
+<% } %>
+
+<% if (typeof info !== 'undefined' && info && info.length > 0) { %>
+  <div class="flash-msg flash-info">
+    <span>ℹ️ <%= info %></span>
+  </div>
+<% } %>

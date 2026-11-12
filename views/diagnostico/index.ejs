@@ -1,0 +1,210 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-content">
+  <%- include('../partials/flash') %>
+
+  <div class="hero-banner" style="padding: 24px 28px; margin-bottom: 24px;">
+    <h1>Diagnóstico Fitossanitário por Foto 🍓</h1>
+    <p>Envie uma imagem nítida de folha de morangueiro para identificação de queima foliar ou deficiência de cálcio.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;" class="diag-grid">
+    <!-- Card de Envio da Foto -->
+    <div class="card">
+      <h2 class="card-title">1. Envie a foto da folha</h2>
+
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-icon">📷</div>
+        <div class="dropzone-text">Arraste a foto da folha aqui</div>
+        <div class="dropzone-sub">ou clique para escolher um arquivo do seu dispositivo</div>
+      </div>
+      <input type="file" id="fotoInput" accept="image/*" style="display: none;">
+
+      <img id="imgPreview" class="img-preview" style="display: none;" alt="Pré-visualização da folha">
+
+      <div class="tip-badges">
+        <span class="tip-badge">🌿 Folha jovem</span>
+        <span class="tip-badge">☀️ Boa iluminação</span>
+        <span class="tip-badge">🔍 Foco aproximado</span>
+      </div>
+
+      <button type="button" class="btn" id="btnAnalisar" style="width: 100%; margin-top: 20px;" disabled>
+        Analisar Folha com IA
+      </button>
+    </div>
+
+    <!-- Card de Resultado -->
+    <div class="card">
+      <h2 class="card-title">2. Resultado do Diagnóstico</h2>
+      <div id="painelResultado">
+        <div style="text-align: center; padding: 48px 16px; color: var(--mut);">
+          <span style="font-size: 40px; display: block; margin-bottom: 8px;">🔬</span>
+          <p style="margin: 0; font-size: 15px;">O resultado da análise aparecerá aqui após o envio da imagem.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const dropzone = document.getElementById('dropzone');
+  const fotoInput = document.getElementById('fotoInput');
+  const imgPreview = document.getElementById('imgPreview');
+  const btnAnalisar = document.getElementById('btnAnalisar');
+  const painelResultado = document.getElementById('painelResultado');
+  let arquivoSelecionado = null;
+
+  dropzone.addEventListener('click', () => fotoInput.click());
+
+  fotoInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+      selecionarArquivo(e.target.files[0]);
+    }
+  });
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+    });
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      selecionarArquivo(e.dataTransfer.files[0]);
+    }
+  });
+
+  function selecionarArquivo(file) {
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione um arquivo de imagem.');
+      return;
+    }
+    arquivoSelecionado = file;
+    imgPreview.src = URL.createObjectURL(file);
+    imgPreview.style.display = 'block';
+    btnAnalisar.disabled = false;
+    painelResultado.innerHTML = `
+      <div style="text-align: center; padding: 36px 16px; color: var(--mut);">
+        <p style="margin: 0; font-size: 15px;">Foto carregada! Clique em <b>"Analisar Folha com IA"</b> para obter o laudo.</p>
+      </div>
+    `;
+  }
+
+  btnAnalisar.addEventListener('click', async () => {
+    if (!arquivoSelecionado) return;
+
+    btnAnalisar.disabled = true;
+    painelResultado.innerHTML = `
+      <div style="text-align: center; padding: 48px 16px;">
+        <span style="font-size: 36px; display: inline-block; animation: spin 1s infinite linear;">⏳</span>
+        <p style="margin-top: 12px; font-weight: 600; color: var(--ink);">Processando diagnóstico fitossanitário...</p>
+        <small style="color: var(--mut);">Preservando estrutura espacial da imagem</small>
+      </div>
+    `;
+
+    const formData = new FormData();
+    formData.append('foto', arquivoSelecionado);
+
+    try {
+      const response = await fetch('/diagnostico/analisar', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.erro) {
+        painelResultado.innerHTML = `
+          <div class="flash-msg flash-erro" style="margin: 0;">
+            <span>⚠️ ${data.erro || 'Erro ao processar imagem.'}</span>
+          </div>
+        `;
+        return;
+      }
+
+      const badgeClass = data.classe === 'saudavel' ? 'b-ok' : (data.classe === 'nao_conclusivo' ? 'b-warn' : 'b-bad');
+
+      let detalhesHtml = '';
+      if (data.detalhes) {
+        detalhesHtml = Object.entries(data.detalhes)
+          .sort((a, b) => b[1] - a[1])
+          .map(([k, v]) => `
+            <div style="display: flex; justify-content: space-between; font-size: 13px; margin-top: 8px;">
+              <span>${k.replace('_', ' ')}</span>
+              <b>${v}%</b>
+            </div>
+            <div style="height: 6px; background: #eee; border-radius: 4px; overflow: hidden; margin-top: 3px;">
+              <div style="height: 100%; width: ${v}%; background: var(--r);"></div>
+            </div>
+          `).join('');
+      }
+
+      painelResultado.innerHTML = `
+        <div>
+          <span class="badge-res ${badgeClass}">${data.classe.replace('_', ' ')}</span>
+          <h3 style="font-size: 20px; margin: 12px 0 6px; color: var(--ink);">${data.titulo}</h3>
+          <p style="font-size: 34px; font-weight: 800; color: var(--r); margin: 0 0 12px 0;">
+            ${data.confianca}% <span style="font-size: 14px; font-weight: 400; color: var(--mut);">de confiança</span>
+          </p>
+          <div style="background: #faf4f5; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-size: 14px; margin-bottom: 16px; line-height: 1.5;">
+            <b>Orientação de Manejo:</b><br>${data.orientacao}
+          </div>
+          <div style="margin-bottom: 18px;">
+            ${detalhesHtml}
+          </div>
+          <div id="boxFeedback" style="border-top: 1px solid #eee; padding-top: 16px; margin-top: 16px;">
+            <p style="font-size: 13px; font-weight: 600; margin: 0 0 10px 0;">O diagnóstico visual foi correto?</p>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn btn-sm btn-secondary" onclick="enviarFeedback(${data.id}, true)">✅ Acertou</button>
+              <button type="button" class="btn btn-sm btn-secondary" onclick="enviarFeedback(${data.id}, false)">❌ Errou</button>
+            </div>
+          </div>
+        </div>
+      `;
+    } catch (err) {
+      console.error(err);
+      painelResultado.innerHTML = `
+        <div class="flash-msg flash-erro" style="margin: 0;">
+          <span>⚠️ Erro na comunicação com o servidor.</span>
+        </div>
+      `;
+    } finally {
+      btnAnalisar.disabled = false;
+    }
+  });
+
+  async function enviarFeedback(id, acertou) {
+    try {
+      await fetch('/diagnostico/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, acertou })
+      });
+      document.getElementById('boxFeedback').innerHTML = `
+        <span style="font-size: 13px; color: #2e7d32; font-weight: 600;">
+          🌱 Obrigado! Seu feedback aprimora a calibração do modelo.
+        </span>
+      `;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+</script>
+
+<style>
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+  @media (max-width: 820px) {
+    .diag-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+<%- include('../partials/footer') %>

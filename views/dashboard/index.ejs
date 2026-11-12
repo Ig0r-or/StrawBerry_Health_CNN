@@ -1,0 +1,102 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-content">
+  <%- include('../partials/flash') %>
+
+  <div class="hero-banner">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <h1>Olá, <%= usuario.nome %> 👋</h1>
+        <p>Monitoramento fitossanitário para sua lavoura em <%= usuario.cidade || 'Pouso Alegre' %> - <%= usuario.estado || 'MG' %></p>
+      </div>
+      <div>
+        <a href="/diagnostico" class="btn">
+          📷 Analisar Folha Agora
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 24px;">
+    <div class="card" style="border-left: 4px solid var(--r);">
+      <p style="margin: 0; font-size: 13px; color: var(--mut); font-weight: 600;">LOCAIS DE CULTIVO</p>
+      <h2 style="font-size: 32px; margin: 8px 0; color: var(--r);"><%= totalLocais %></h2>
+      <a href="/locais" style="font-size: 13px; font-weight: 600;">Gerenciar talhões →</a>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #2e7d32;">
+      <p style="margin: 0; font-size: 13px; color: var(--mut); font-weight: 600;">DIAGNÓSTICOS</p>
+      <h2 style="font-size: 32px; margin: 8px 0; color: #2e7d32;"><%= totalDiagnosticos %></h2>
+      <a href="/diagnostico" style="font-size: 13px; font-weight: 600;">Nova foto →</a>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #0288d1;">
+      <p style="margin: 0; font-size: 13px; color: var(--mut); font-weight: 600;">REGIÃO ALVO</p>
+      <h2 style="font-size: 20px; margin: 12px 0 8px; color: #0288d1;">Sul de Minas</h2>
+      <span style="font-size: 12px; color: var(--mut);">Mantiqueira · Pouso Alegre</span>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: start;" class="dashboard-columns">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 class="card-title" style="margin: 0;">Meus Locais de Plantio Recentes</h2>
+        <a href="/locais/novo" class="btn btn-sm">+ Novo Local</a>
+      </div>
+
+      <% if (ultimosLocais && ultimosLocais.length > 0) { %>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nome / Talhão</th>
+                <th>Cultivar</th>
+                <th>Município</th>
+                <th style="text-align: right;">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% ultimosLocais.forEach(loc => { %>
+                <tr>
+                  <td><b><%= loc.nome %></b></td>
+                  <td><%= loc.cultivar || 'San Andreas' %></td>
+                  <td><%= loc.cidade %> - <%= loc.estado %></td>
+                  <td style="text-align: right;">
+                    <a href="/locais/<%= loc.id %>/editar" class="btn btn-sm btn-secondary">Editar</a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top: 14px; text-align: right;">
+          <a href="/locais" style="font-size: 14px; font-weight: 600;">Ver todos os <%= totalLocais %> locais →</a>
+        </div>
+      <% } else { %>
+        <div style="text-align: center; padding: 36px 16px; color: var(--mut);">
+          <p style="font-size: 16px; margin-bottom: 12px;">Nenhum local de plantio cadastrado ainda.</p>
+          <a href="/locais/novo" class="btn btn-sm">+ Cadastrar Primeiro Local</a>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Apoio ao Produtor</h2>
+      <p style="font-size: 14px; color: var(--mut); line-height: 1.5; margin-bottom: 16px;">
+        O BerryHealth AI auxilia na detecção precoce de deficiência de cálcio (tipburn) e queima foliar em mudas e folhas jovens.
+      </p>
+
+      <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 13px; margin-bottom: 16px;">
+        <b>🌿 Dica de Manejo:</b><br>
+        A deficiência de cálcio ocorre frequentemente em períodos de alta umidade e baixa ventilação na estufa, pois reduz a transpiração da planta.
+      </div>
+
+      <a href="/diagnostico" class="btn" style="width: 100%;">
+        Enviar Foto para IA
+      </a>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
