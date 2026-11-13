@@ -1,3 +1,4 @@
+require('dotenv').config();
 const assert = require('assert');
 const http = require('http');
 
@@ -13,7 +14,7 @@ function httpRequest(options, postData = null, cookie = null) {
 
     const reqOptions = {
       hostname: '127.0.0.1',
-      port: 3000,
+      port: process.env.PORT || 3000,
       path: options.path,
       method: options.method || 'GET',
       headers: { ...defaultHeaders, ...options.headers }
