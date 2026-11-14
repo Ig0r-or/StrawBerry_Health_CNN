@@ -146,11 +146,17 @@ async function popularBanco() {
     console.log('👑 Usuário Admin:    admin@berryhealth.com    | Senha: admin123');
     console.log('----------------------------------------------------\n');
 
-    process.exit(0);
+    return true;
   } catch (error) {
     console.error('❌ Erro durante o seed do banco de dados:', error);
-    process.exit(1);
+    throw error;
   }
 }
 
-popularBanco();
+module.exports = popularBanco;
+
+if (require.main === module) {
+  popularBanco()
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));
+}
