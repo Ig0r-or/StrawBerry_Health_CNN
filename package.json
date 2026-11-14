@@ -7,9 +7,16 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "seed": "node seeders/seed.js",
+    "build": "node seeders/seed.js",
     "test": "node test_release2.js"
   },
-  "keywords": ["berryhealth", "strawberry", "cnn", "agritech", "pouso-alegre"],
+  "keywords": [
+    "berryhealth",
+    "strawberry",
+    "cnn",
+    "agritech",
+    "pouso-alegre"
+  ],
   "author": "Cezar Vitor Leite Junior, Igor Gabriel Silva Prado, Rodrigo Marques de Castro",
   "license": "MIT",
   "dependencies": {
@@ -22,6 +29,7 @@
     "multer": "^2.5.0",
     "mysql2": "^3.24.6",
     "sequelize": "^6.37.8",
+    "serverless-http": "^4.0.0",
     "sqlite3": "^6.0.1"
   }
 }

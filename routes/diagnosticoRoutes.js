@@ -2,13 +2,24 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const diagnosticoController = require('../controllers/diagnosticoController');
 const { requireAuth } = require('../middlewares/auth');
+
+// Suporte para gravação em /tmp no Netlify / Serverless
+const isServerless = !!(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const uploadDir = isServerless 
+  ? path.join('/tmp', 'uploads') 
+  : path.join(__dirname, '..', 'public', 'uploads');
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Configuração de armazenamento com Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '..', 'public', 'uploads'));
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     const unico = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
