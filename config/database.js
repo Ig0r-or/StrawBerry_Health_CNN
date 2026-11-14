@@ -27,7 +27,7 @@ if (dialect === 'mysql') {
   );
 } else {
   // Padrão: SQLite para desenvolvimento ágil e demonstração sem dependência externa
-  const isServerless = !!(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
+  const isServerless = !!(process.env.NETLIFY || process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
   let storagePath;
 
   if (isServerless) {

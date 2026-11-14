@@ -6,8 +6,8 @@ const fs = require('fs');
 const diagnosticoController = require('../controllers/diagnosticoController');
 const { requireAuth } = require('../middlewares/auth');
 
-// Suporte para gravação em /tmp no Netlify / Serverless
-const isServerless = !!(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
+// Suporte para gravação em /tmp no Netlify / Vercel / Serverless
+const isServerless = !!(process.env.NETLIFY || process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 const uploadDir = isServerless 
   ? path.join('/tmp', 'uploads') 
   : path.join(__dirname, '..', 'public', 'uploads');

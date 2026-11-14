@@ -25,8 +25,8 @@ app.use(express.json());
 // Arquivos estáticos (CSS, JS, imagens)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Servir uploads no Netlify / Serverless a partir de /tmp/uploads
-const isServerless = !!(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
+// Servir uploads no Netlify / Vercel / Serverless a partir de /tmp/uploads
+const isServerless = !!(process.env.NETLIFY || process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 if (isServerless) {
   const tmpUploads = path.join('/tmp', 'uploads');
   if (!fs.existsSync(tmpUploads)) {
